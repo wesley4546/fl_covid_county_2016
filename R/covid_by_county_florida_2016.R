@@ -1,38 +1,53 @@
+# Import libraries --------------------------------------------------------
+
 library(janitor)
 library(ggplot2)
 library(dplyr)
 library(tidyverse)
-install.packages("tidyverse")
-
-updateR()
 
 # Reading Data ------------------------------------------------------------
+
 #Florida election results
 data <- read.csv(
   here::here("data","florida_county_election_results_2016.csv", stringsAsFactors = FALSE)
   )
 
-#
+
+#WHO COVID Date
 covid_cases_url <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
 covid_deaths_url <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
 
-cases <- read.csv(url(covid_cases_url))
-# Cleaning Data -----------------------------------------------------------
+
+deaths <- read.csv(url(covid_deaths_url), stringsAsFactors = FALSE)
+cases <- read.csv(url(covid_cases_url), stringsAsFactors = FALSE)
+
+
+# Cleaning Cases Data -----------------------------------------------------
+
+cases <-
+  cases %>% 
+  filter(Country_Region == "US" & Province_State =="Florida") %>%
+  select(Admin2, X1.22.20:ncol(cases))
+
+cases <-
+  cases %>%
+  rename(County = Admin2)
 
 str(cases)
 
+# Cleaning Deaths Data ----------------------------------------------------
 
-cases_data <- 
-  cases %>%
-  filter(Country_Region == "US") %>%
-  select(Province_State, X1.22.20:ncol(cases)) %>% 
-  rename(state= Province_State)
-  
+deaths <- 
+  deaths %>%
+  filter(Country_Region == "US" & Province_State == "Florida") %>%
+  select(Admin2, X1.22.20:ncol(deaths)) 
+
+deaths <- 
+  deaths %>%
+  rename(County = Admin2)
 
 
-str(cases_data)  
-
-
+# Joining Election Data with COVID Data -----------------------------------
 
 
 

@@ -27,24 +27,43 @@ cases <- read.csv(url(covid_cases_url), stringsAsFactors = FALSE)
 cases <-
   cases %>% 
   filter(Country_Region == "US" & Province_State =="Florida") %>%
-  select(Admin2, X1.22.20:ncol(cases))
+  rename(County = Admin2) %>%
+  select(County, X1.22.20:ncol(cases)) %>%
+  filter(!County %in% c(
+    "Out of FL",
+    "Unassigned"
+  )) 
 
-cases <-
-  cases %>%
-  rename(County = Admin2)
+cases <- pivot_longer(cases, cols = X1.22.20:ncol(cases), names_to = "Date", values_to = "case_count")
 
-str(cases)
+
+# Remove X from date column
+cases$Date <- gsub("X", "", cases$Date)
+
+# set Date column to Date 
+cases$Date <- as.Date(cases$Date, format ="%m.%d.%y")
+
 
 # Cleaning Deaths Data ----------------------------------------------------
 
 deaths <- 
   deaths %>%
   filter(Country_Region == "US" & Province_State == "Florida") %>%
-  select(Admin2, X1.22.20:ncol(deaths)) 
+  rename(County = Admin2) %>%
+  select(County, X1.22.20:ncol(deaths)) %>%
+  filter(!County %in% c(
+    "Out of FL",
+    "Unassigned"
+  ))
 
-deaths <- 
-  deaths %>%
-  rename(County = Admin2)
+#Pivot data 
+deaths <- pivot_longer(deaths, cols = X1.22.20:ncol(deaths), names_to = "Date", values_to = "death_count")
+
+#Remove X from date column
+deaths$Date <- gsub("X", "", deaths$Date)
+
+#Change data type to Date of Date column
+deaths$Date <- as.Date(deaths$Date, format = "%m.%d.%y")
 
 
 # Joining Election Data with COVID Data -----------------------------------

@@ -7,17 +7,15 @@ library(tidyverse)
 
 # Reading Data ------------------------------------------------------------
 
-#Florida election results
-data <- read.csv(
-  here::here("data","florida_county_election_results_2016.csv", stringsAsFactors = FALSE)
-  )
 
+#Florida election results
+election_data <- florida_county_election_results_2016 
 
 #WHO COVID Date
 covid_cases_url <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv"
 covid_deaths_url <- "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv"
 
-
+#Read Data to CSV
 deaths <- read.csv(url(covid_deaths_url), stringsAsFactors = FALSE)
 cases <- read.csv(url(covid_cases_url), stringsAsFactors = FALSE)
 
@@ -67,7 +65,14 @@ deaths$Date <- as.Date(deaths$Date, format = "%m.%d.%y")
 
 
 # Joining Election Data with COVID Data -----------------------------------
+election_data <-
+  election_data %>%
+  rename(County = `Vote by County`)
 
+
+main_data <- 
+  cases %>% 
+  left_join(election_data, by = "Vote by County")
 
 
 # tutorial on joins in R https://r4ds.had.co.nz/relational-data.html#mutating-joins

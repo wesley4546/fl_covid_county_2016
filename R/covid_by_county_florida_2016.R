@@ -65,24 +65,31 @@ deaths$Date <- as.Date(deaths$Date, format = "%m.%d.%y")
 
 
 # Joining Election Data with COVID Data -----------------------------------
+str(election_data)
+
 election_data <-
   election_data %>%
-  rename(County = `Vote by County`)
+  rename(County = "Vote by county")
 
 
-main_data <- 
+main_data_cases <- 
   cases %>% 
-  left_join(election_data, by = "Vote by County")
+  left_join(election_data, by = "County")
+
+
+main_data_deaths <-
+  deaths %>%
+  left_join(election_data, by = "County")
 
 
 # tutorial on joins in R https://r4ds.had.co.nz/relational-data.html#mutating-joins
-# Use sometype of joining 
-
 # GitHub to my previous cleaning of the same data : https://github.com/wesley4546/covidstate/tree/master/R
 
-
-
 # Graphing Data -----------------------------------------------------------
+ggplot(main_data, aes(x=Date)) +
+  geom_line(y=case_count, group = county)
+
+
 
 # ggplot; color by party
 
